@@ -1,10 +1,95 @@
 import pygame
-import sys
+import sys,os
 import random
 from tkinter import *
 from collections import *
 
-###TKINTER APP###
+###SAVE/OPEN###
+def save_file(matrix):
+    global window,NAME
+    if NAME == None:
+        try:
+            os.mkdir(os.getcwd()+"\\PaintWorks")
+            print("DIR CREATED")
+
+        except:
+            print("DIR ALREADY CREATED")
+
+        window = Tk()
+        window.geometry('250x100')
+        window.resizable(False, False)
+
+        message = StringVar()
+        Label(window, text="Name your file(without expansion):").pack()
+        Entry(window, textvariable=message).pack()
+        Button(window, text="OK", command=close_window).pack()
+        window.mainloop()
+        if message.get() != '':
+            try:
+                file = open("PaintWorks"+"\\"+str(message.get())+".txt",'w')
+                NAME = message.get()
+                file.write(str(matrix))
+                print("FILE SAVED")
+            except:
+                print("CANT CREATE FILE")
+
+    else:
+        file = open("PaintWorks" + "\\" + NAME + '.txt', 'w')
+        file.write(str(matrix))
+        print("FILE SAVED")
+
+def open_file(screen):
+        global NAME,window,MATRIX
+
+        window = Tk()
+        window.geometry('250x100')
+        window.resizable(False, False)
+
+        filename = StringVar()
+        Label(window, text="Name of file:").pack()
+        Entry(window, textvariable=filename).pack()
+        Button(window, text="OK", command=close_window).pack()
+        window.mainloop()
+        try:
+            file = open('PaintWorks\\'+str(filename.get())+'.txt','r')
+
+            for line in file:
+                matrixx = line
+
+            y = 0
+            color = []
+            one_rgb = ''
+            newmatrix = matrix(WINDOW_HEIGHT)
+
+            for symbol in matrixx:
+                try:
+                    int(symbol)
+                    one_rgb += symbol
+                except:
+                    if symbol == ',':
+                        color.append(int(one_rgb))
+                        one_rgb = ''
+
+                if len(newmatrix[y]) == WINDOW_WIDTH:
+                    y += 1
+
+
+                if len(color) == 3:
+                    newmatrix[y].append(color)
+                    color = []
+
+            MATRIX = newmatrix
+
+
+            for y in range(WINDOW_HEIGHT-1):
+                for x in range(WINDOW_WIDTH-1):
+                    pygame.draw.rect(screen,MATRIX[y][x], (x, y, 1, 1))
+            NAME = filename.get()
+        except:
+            print("INCORRECT PATH")
+###---------###
+
+####TKINTER APP###
 def check_color(color):
     if len(color) != 3:
         print("INCORRECT,MUST BE 3 ARGUMENTS")
@@ -75,17 +160,25 @@ def create_window(boolean):
 def events(window,size,matrix):
     global MOUSE_MOTION,CURRENT_COLOR,WINDOW_WIDTH,WINDOW_HEIGHT,BRUSHSIZE
     global CREATED_COLOR
+    global NAME
     color = CURRENT_COLOR
 
     k = pygame.key.get_pressed()
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
+            save_file(matrix)
             sys.exit()
 
         if k[pygame.K_x]:
             clear_all(matrix,WINDOW_HEIGHT,WINDOW_WIDTH)
             window.fill((255,255,255))
+
+        if k[pygame.K_s]:
+            save_file(matrix)
+
+        if k[pygame.K_o]:
+            open_file(window)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -323,6 +416,9 @@ def settings_interface(window,width,height):
 
 def update_window(window):
     global WINDOW_WIDTH,WINDOW_HEIGHT
+    lilfont = pygame.font.Font(None,20)
+    window.blit(lilfont.render("O-open file",0,(CURRENT_COLOR)),(0,0))
+    window.blit(lilfont.render("S-save file",0,(CURRENT_COLOR)),(0,20))
 
     settings_interface(window,WINDOW_WIDTH,WINDOW_HEIGHT)
     color_interface(window,WINDOW_HEIGHT,CREATED_COLOR)
@@ -332,7 +428,7 @@ def update_window(window):
 ##CONSTANTS###
 WINDOW_WIDTH = 1300
 WINDOW_HEIGHT = 800
-WINDOW_CAPTION = ("Paint")
+WINDOW_CAPTION = ("Paint 05.10.2019")
 
 BRUSHSIZE = 10
 CURRENT_COLOR = (255,0,0)
@@ -351,6 +447,7 @@ RANDOM_COLOR = (random.randint(0,255),random.randint(0,255),random.randint(0,255
 MATRIX = matrix(WINDOW_HEIGHT)
 
 MOUSE_MOTION = False
+NAME = None
 ###--------###
 
 ###MAIN###
@@ -367,4 +464,5 @@ def Paint():
         update_window(window)
 
 Paint()
+
 ###----###
