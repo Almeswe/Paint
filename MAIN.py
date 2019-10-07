@@ -42,10 +42,20 @@ def open_file(screen):
         global NAME,window,MATRIX
 
         window = Tk()
-        window.geometry('250x100')
+        window.geometry('250x200')
         window.resizable(False, False)
 
         filename = StringVar()
+        Label(window,text = "All file names:(you can scroll)").pack()
+        browse = Text(window,width =20,height =5,wrap = WORD)
+        browse.pack()
+
+        i = 1
+        for file in os.listdir('PaintWorks'):
+            browse.insert(str(float(i)),file+' ')
+            i+=1
+
+
         Label(window, text="Name of file:").pack()
         Entry(window, textvariable=filename).pack()
         Button(window, text="OK", command=close_window).pack()
@@ -428,7 +438,7 @@ def update_window(window):
 ##CONSTANTS###
 WINDOW_WIDTH = 1300
 WINDOW_HEIGHT = 800
-WINDOW_CAPTION = ("Paint 05.10.2019")
+WINDOW_CAPTION = ("Paint")
 
 BRUSHSIZE = 10
 CURRENT_COLOR = (255,0,0)
