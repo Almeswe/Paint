@@ -52,7 +52,7 @@ def open_file(screen):
 
         i = 1
         for file in os.listdir('PaintWorks'):
-            browse.insert(str(float(i)),file+' ')
+            browse.insert(str(float(i)),file+'\n')
             i+=1
 
 
@@ -119,6 +119,7 @@ def check_color(color):
         return truecolor
 
 def check_size(size):
+    global BRUSHSIZE
     try:
         if int(size) > 100:
             SIZE = 100
@@ -127,7 +128,7 @@ def check_size(size):
         return int(size)
     except:
         print("SIZE MUST BE INTEGER")
-        return 5
+        return BRUSHSIZE
 
 def close_window():
     window.destroy()
@@ -326,8 +327,6 @@ def color_fill(window,color,areacolor,matrix,x,y):
                                 pygame.draw.rect(window, color, (current[0], current[1], 1, 1))
                                 matrix[current[1]][current[0]] = [color[0], color[1], color[2]]
                                 current_queue.append(current)
-
-
 
 def neighbours(posX,posY,width,height):
     neighbours = []
