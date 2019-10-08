@@ -39,64 +39,69 @@ def save_file(matrix):
         print("FILE SAVED")
 
 def open_file(screen):
-        global NAME,window,MATRIX
+    global NAME,window,MATRIX
 
-        window = Tk()
-        window.geometry('250x200')
-        window.resizable(False, False)
+            window = Tk()
+            window.geometry('250x200')
+            window.resizable(False, False)
 
-        filename = StringVar()
-        Label(window,text = "All file names:(you can scroll)").pack()
-        browse = Text(window,width =20,height =5,wrap = WORD)
-        browse.pack()
+            filename = StringVar()
+            Label(window,text = "All file names:(you can scroll)").pack()
+            browse = Text(window,width =20,height =5,wrap = WORD)
+            browse.pack()
 
-        i = 1
-        for file in os.listdir('PaintWorks'):
-            browse.insert(str(float(i)),file+'\n')
-            i+=1
-
-
-        Label(window, text="Name of file:").pack()
-        Entry(window, textvariable=filename).pack()
-        Button(window, text="OK", command=close_window).pack()
-        window.mainloop()
-        try:
-            file = open('PaintWorks\\'+str(filename.get())+'.txt','r')
-
-            for line in file:
-                matrixx = line
-
-            y = 0
-            color = []
-            one_rgb = ''
-            newmatrix = matrix(WINDOW_HEIGHT)
-
-            for symbol in matrixx:
-                try:
-                    int(symbol)
-                    one_rgb += symbol
-                except:
-                    if symbol == ',':
-                        color.append(int(one_rgb))
-                        one_rgb = ''
-
-                if len(newmatrix[y]) == WINDOW_WIDTH:
-                    y += 1
+            i = 1
+            for file in os.listdir('PaintWorks'):
+                browse.insert(str(float(i)),file+'\n')
+                i+=1
 
 
-                if len(color) == 3:
-                    newmatrix[y].append(color)
-                    color = []
+            Label(window, text="Name of file:").pack()
+            Entry(window, textvariable=filename).pack()
+            Button(window, text="OK", command=close_window).pack()
+            window.mainloop()
+            try:
+                file = open('PaintWorks\\'+str(filename.get())+'.txt','r')
 
-            MATRIX = newmatrix
+                for line in file:
+                    matrixx = line
+
+                y = 0
+                color = []
+                one_rgb = ''
+                newmatrix = matrix(WINDOW_HEIGHT)
+
+                print()
+                print("UNPACKING MATRIX...")
+
+                for symbol in matrixx:
+                    try:
+                        int(symbol)
+                        one_rgb += symbol
+                    except:
+                        if symbol == ',':
+                            color.append(int(one_rgb))
+                            one_rgb = ''
+
+                    if len(newmatrix[y]) == WINDOW_WIDTH:
+                        y += 1
 
 
-            for y in range(WINDOW_HEIGHT-1):
-                for x in range(WINDOW_WIDTH-1):
-                    pygame.draw.rect(screen,MATRIX[y][x], (x, y, 1, 1))
-            NAME = filename.get()
-        except:
-            print("INCORRECT PATH")
+                    if len(color) == 3:
+                        newmatrix[y].append(color)
+                        color = []
+
+                MATRIX = newmatrix
+
+                print("CREATE IMAGE...")
+                for y in range(WINDOW_HEIGHT-1):
+                    for x in range(WINDOW_WIDTH-1):
+                        pygame.draw.rect(screen,MATRIX[y][x], (x, y, 1, 1))
+                NAME = filename.get()
+                print("SUCCESS")
+                print()
+            except:
+                print("INCORRECT PATH")
 ###---------###
 
 ####TKINTER APP###
