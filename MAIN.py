@@ -39,76 +39,84 @@ def save_file(matrix):
         print("FILE SAVED")
 
 def open_file(screen):
-    global NAME,window,MATRIX
+        global NAME,window,MATRIX
 
-            window = Tk()
-            window.geometry('250x200')
-            window.resizable(False, False)
+        window = Tk()
+        window.geometry('250x200')
+        window.resizable(False, False)
 
-            filename = StringVar()
-            Label(window,text = "All file names:(you can scroll)").pack()
-            browse = Text(window,width =20,height =5,wrap = WORD)
-            browse.pack()
+        filename = StringVar()
+        Label(window,text = "All file names:(you can scroll)").pack()
+        browse = Text(window,width =20,height =5,wrap = WORD)
+        browse.pack()
 
+        try:
+            i = 1
+            for file in os.listdir('PaintWorks'):
+                browse.insert(str(float(i)),file+'\n')
+                i+=1
+        except:
+            os.mkdir(os.getcwd()+"\\PaintWorks")
+            print("DIR CREATED")
             i = 1
             for file in os.listdir('PaintWorks'):
                 browse.insert(str(float(i)),file+'\n')
                 i+=1
 
+        Label(window, text="Name of file:").pack()
+        Entry(window, textvariable=filename).pack()
+        Button(window, text="OK", command=close_window).pack()
+        window.mainloop()
+        try:
+            file = open('PaintWorks\\'+str(filename.get())+'.txt','r')
 
-            Label(window, text="Name of file:").pack()
-            Entry(window, textvariable=filename).pack()
-            Button(window, text="OK", command=close_window).pack()
-            window.mainloop()
-            try:
-                file = open('PaintWorks\\'+str(filename.get())+'.txt','r')
+            for line in file:
+                matrixx = line
 
-                for line in file:
-                    matrixx = line
+            y = 0
+            color = []
+            one_rgb = ''
+            newmatrix = matrix(WINDOW_HEIGHT)
 
-                y = 0
-                color = []
-                one_rgb = ''
-                newmatrix = matrix(WINDOW_HEIGHT)
+            print()
+            print("UNPACKING MATRIX...")
 
-                print()
-                print("UNPACKING MATRIX...")
+            for symbol in matrixx:
+                try:
+                    int(symbol)
+                    one_rgb += symbol
+                except:
+                    if symbol == ',':
+                        color.append(int(one_rgb))
+                        one_rgb = ''
 
-                for symbol in matrixx:
-                    try:
-                        int(symbol)
-                        one_rgb += symbol
-                    except:
-                        if symbol == ',':
-                            color.append(int(one_rgb))
-                            one_rgb = ''
-
-                    if len(newmatrix[y]) == WINDOW_WIDTH:
-                        y += 1
+                if len(newmatrix[y]) == WINDOW_WIDTH:
+                    y += 1
 
 
-                    if len(color) == 3:
-                        newmatrix[y].append(color)
-                        color = []
+                if len(color) == 3:
+                    newmatrix[y].append(color)
+                    color = []
 
-                MATRIX = newmatrix
+            MATRIX = newmatrix
 
-                print("CREATE IMAGE...")
-                for y in range(WINDOW_HEIGHT-1):
-                    for x in range(WINDOW_WIDTH-1):
-                        pygame.draw.rect(screen,MATRIX[y][x], (x, y, 1, 1))
-                NAME = filename.get()
-                print("SUCCESS")
-                print()
-            except:
-                print("INCORRECT PATH")
+            print("CREATE IMAGE...")
+            for y in range(WINDOW_HEIGHT-1):
+                for x in range(WINDOW_WIDTH-1):
+                    pygame.draw.rect(screen,MATRIX[y][x], (x, y, 1, 1))
+            NAME = filename.get()
+            print("SUCCESS")
+            print()
+        except:
+            print("INCORRECT PATH")
 ###---------###
 
 ####TKINTER APP###
 def check_color(color):
+    global CREATED_COLOR
     if len(color) != 3:
         print("INCORRECT,MUST BE 3 ARGUMENTS")
-        return (0,0,0)
+        return CREATED_COLOR
     else:
         truecolor = []
         for num in color:
@@ -117,10 +125,10 @@ def check_color(color):
                     truecolor.append(int(num))
                 else:
                     print("INCORRECT VALUE")
-                    return (0,0,0)
+                    return CREATED_COLOR
             except:
                 print("INCORRECT,VALUES MUST BE INTEGER")
-                return (0,0,0)
+                return CREATED_COLOR
         return truecolor
 
 def check_size(size):
